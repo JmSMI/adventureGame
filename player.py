@@ -1,5 +1,5 @@
 import items
-
+import world
 
 # Defines the player inventory and starting location.
 # The player always has a position, and the world
@@ -17,6 +17,18 @@ class Player:
         self.x += dx
         self.y += dy
 
+    def attack(self):
+        best_weapon = self.most_powerful_weapon()
+        room = world.tile_at(self.x, self.y)
+        enemy = room.enemy
+        enemy.hp -= best_weapon.damage
+
+        print("You use {}:{} against {}!".format(best_weapon.name, best_weapon.damage, enemy.name))
+
+        if not enemy.is_alive():
+            print("You destroyed " + enemy.name)
+        else:
+            print("{} HP is {}.".format(enemy.name, enemy.hp))
 
     def most_powerful_weapon(self):
         max_damage = 0

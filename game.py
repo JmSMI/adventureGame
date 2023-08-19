@@ -47,6 +47,8 @@ def play():
             print(room.intro_text())
         elif action_input == 'i':
             player.print_inventory()
+        elif action_input == 'a':
+            player.attack()
         else:
             print("Invalid input.")
 
