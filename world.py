@@ -12,6 +12,9 @@ class MapTile:
     def intro_tile(self):
         raise NotImplementedError("Create a subclass.")
 
+    def modify_player(self, player):
+        pass
+
 
 # Tiles
 
@@ -23,25 +26,37 @@ class EnemyTile(MapTile):
             # Using self ensures that the enemy object is
             # created alongside the tile
             self.enemy = enemies.GiantSpider()
+            self.alive_text = "A giant spider drops down."
+            self.dead_text = "The spider is dead."
         elif r < 0.80:
             self.enemy = enemies.Ogre()
+            self.alive_text = "An ogre appears."
+            self.dead_text = "The ogre has been killed."
         elif r < 95:
             self.enemy = enemies.AntColony()
+            self.alive_text = "A colony of ants attacks you."
+            self.dead_text = "The colony is dispersed"
         else:
             self.enemy = enemies.Scorpion()
+            self.alive_text = "A scorpion jumps at you."
+            self.dead_text = "The scorpion has been squashed."
 
         super().__init__(x, y)
 
+    def modify_player(self, player):
+        if self.enemy.is_alive():
+            player.hp -= self.enemy.damage
+            print("{} does {} damage. You have {} HP.".format(self.enemy.name, self.enemy.damage, player.hp))
+
     def intro_tile(self):
         if self.enemy.is_alive():
-            print("You've come across an enemy.")
+            print("You come across an enemy.")
         else:
-            print("You defeated an enemy.")
+            print("The enemy is destroyed.")
 
     def intro_text(self):
-        return """
-        You've encountered an enemy.
-        """
+        text = self.alive_text if self.enemy.is_alive() else self.dead_text
+        return text
 
 
 class StartTile(MapTile):

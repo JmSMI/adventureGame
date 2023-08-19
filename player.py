@@ -10,6 +10,7 @@ class Player:
     def __init__(self):
         self.inventory = [items.Stick(), items.Rock(),
                           'Gold(5)', 'Fresh Bread', 'Old Bread']
+        self.hp = 100
         self.x = 1
         self.y = 2
 
