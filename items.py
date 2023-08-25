@@ -34,3 +34,23 @@ class Stick(Weapon):
         self.name = "Stick"
         self.description = "A small branch useful for whacking things."
         self.damage = 5
+
+
+class Consumable():
+    def __init__(self):
+        raise NotImplementedError("Do not create Consumable objects.")
+
+    def __str__(self):
+        return f"{self.name} (+{self.healing_value}) HP"
+
+
+class FreshBread(Consumable):
+    def __init__(self):
+        self.name = "Fresh Bread"
+        self.healing_value = 50
+
+
+class OldBread(Consumable):
+    def __init__(self):
+        self.name = "Old Bread"
+        self.healing_value = 25

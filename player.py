@@ -1,6 +1,7 @@
 import items
 import world
 
+
 # Defines the player inventory and starting location.
 # The player always has a position, and the world
 # knows what tiles are in what position. Game is controller between
@@ -9,7 +10,7 @@ class Player:
     # player starts off with an inventory
     def __init__(self):
         self.inventory = [items.Stick(), items.Rock(),
-                          'Gold(5)', 'Fresh Bread', 'Old Bread']
+                          'Gold(5)', items.FreshBread(), items.OldBread()]
         self.hp = 100
         self.x = 1
         self.y = 2
@@ -31,6 +32,21 @@ class Player:
         else:
             print("{} HP is {}.".format(enemy.name, enemy.hp))
 
+    def heal(self):
+        consumables = []
+        for thing in self.inventory:
+            if isinstance(thing, items.Consumable):
+                consumables.append(thing)
+
+        print("What do you want to heal with?")
+        for index, value in list(enumerate(consumables)):
+            print(str(index) + ".", value)
+        choice = input("")
+
+        self.hp += consumables[int(choice)].healing_value
+        print("You healed " + str(consumables[int(choice)].healing_value) + " HP. You have " + str(self.hp) + " HP")
+
+        self.inventory.remove(consumables[int(choice)])
     def most_powerful_weapon(self):
         max_damage = 0
         best_weapon = None
@@ -44,10 +60,13 @@ class Player:
 
         return best_weapon
 
+    def print_health(self):
+        print(f"You have {self.hp} HP.")
+
     def print_inventory(self):
         print("Inventory:")
         for item in self.inventory:
             print(f"* {str(item)}")
 
         best_weapon = self.most_powerful_weapon()
-        print("Your most powerful weapon is: " + str(best_weapon))
+        print("Your most powerful weapon is a " + str(best_weapon))
