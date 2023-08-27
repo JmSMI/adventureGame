@@ -80,11 +80,34 @@ class VictoryTile(MapTile):
 
 
 world_dsl = """
-|  |VT|  |
-|  |EN|  |
-|EN|ST|EN|
-|  |EN|  |
+|  |VT|BT|BT|BT|  |
+|  |EN|  |  |EN|BT|
+|BT|ST|EN|BT|BT|  |
+|  |EN|  |  |EN|  |
 """
+
+
+def parse_world_dsf():
+    if not is_dsl_valid(world_dsl):
+        raise SyntaxError("Error: Invalid DSL.")
+    # Split the DSL into seperate lines
+    rows = world_dsl.splitlines()
+    # Only include lines that contain something
+    rows = [x for x in rows if x]
+    # Provide an index value (y) for each new row
+    # Use a delimeter to split the rows into non-empty cells
+    for y, rows in enumerate(rows):
+        # Store tiles in a list
+        tiles = []
+        cell = rows.split("|")
+        cell = [c for c in cell if c]
+        # Provide an index value (x) to each new cell
+        # Convert DSL abbreviations to classes
+        # Store the tile_type in a row, then add the finished row to the world map
+        for x, cell in enumerate(cell):
+            tile_type = tile_type_dict[cell]
+            tiles.append(tile_type(x, y) if tile_type else None)
+        world_map.append(tiles)
 
 
 def is_dsl_valid(dsl):
@@ -102,21 +125,12 @@ def is_dsl_valid(dsl):
 tile_type_dict = {"VT": VictoryTile,
                   "EN": EnemyTile,
                   "ST": StartTile,
+                  "BT": BoringTile,
                   "  ": None}
 
 # Define all the tiles in the world map
 # Note that world_map[] are rows and world_map[][] are columns
-world_map = [
-    [None, VictoryTile(1, 0), None],
-    [None, EnemyTile(1, 1), None],
-    [EnemyTile(0, 2), StartTile(1, 2), EnemyTile(2, 2)],
-    [None, EnemyTile(1, 3), None]
-]
-
-
-def parse_world_dsf():
-    if not is_dsl_valid(world_dsl):
-        raise SyntaxError("Error: Invalid DSL.")
+world_map = []
 
 
 # Retrieve a tile at a given location
