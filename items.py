@@ -36,7 +36,7 @@ class Stick(Weapon):
         self.damage = 5
 
 
-class Consumable():
+class Consumable:
     def __init__(self):
         raise NotImplementedError("Do not create Consumable objects.")
 

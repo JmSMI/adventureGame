@@ -26,11 +26,11 @@ class EnemyTile(MapTile):
             # Using self ensures that the enemy object is
             # created alongside the tile
             self.enemy = enemies.GiantSpider()
-            self.alive_text = "A giant spider drops down."
+            self.alive_text = "A giant spider drops down to attack."
             self.dead_text = "The spider is dead."
         elif r < 0.80:
             self.enemy = enemies.Ogre()
-            self.alive_text = "An ogre appears."
+            self.alive_text = "An ogre lunges at you."
             self.dead_text = "The ogre has been killed."
         elif r < 95:
             self.enemy = enemies.AntColony()
@@ -47,12 +47,6 @@ class EnemyTile(MapTile):
         if self.enemy.is_alive():
             player.hp -= self.enemy.damage
             print("{} does {} damage. You have {} HP.".format(self.enemy.name, self.enemy.damage, player.hp))
-
-    def intro_tile(self):
-        if self.enemy.is_alive():
-            print("You come across an enemy.")
-        else:
-            print("The enemy is destroyed.")
 
     def intro_text(self):
         text = self.alive_text if self.enemy.is_alive() else self.dead_text
@@ -85,6 +79,31 @@ class VictoryTile(MapTile):
         """
 
 
+world_dsl = """
+|  |VT|  |
+|  |EN|  |
+|EN|ST|EN|
+|  |EN|  |
+"""
+
+
+def is_dsl_valid(dsl):
+    if "VT" not in dsl or "ST" not in dsl:
+        return False
+    lines = dsl.splitlines()
+    lines = [l for l in lines if l]
+    pipe_counts = [l.count("|") for l in lines]
+    for count in pipe_counts:
+        if count != pipe_counts[0]:
+            return False
+    return True
+
+
+tile_type_dict = {"VT": VictoryTile,
+                  "EN": EnemyTile,
+                  "ST": StartTile,
+                  "  ": None}
+
 # Define all the tiles in the world map
 # Note that world_map[] are rows and world_map[][] are columns
 world_map = [
@@ -93,6 +112,11 @@ world_map = [
     [EnemyTile(0, 2), StartTile(1, 2), EnemyTile(2, 2)],
     [None, EnemyTile(1, 3), None]
 ]
+
+
+def parse_world_dsf():
+    if not is_dsl_valid(world_dsl):
+        raise SyntaxError("Error: Invalid DSL.")
 
 
 # Retrieve a tile at a given location
