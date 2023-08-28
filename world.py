@@ -1,7 +1,6 @@
 import random
 import enemies
-import npc
-
+from npc import Trader
 
 # Describes tiles on the map and the map grid using
 # x, y coordinates
@@ -24,8 +23,6 @@ class EnemyTile(MapTile):
         r = random.random()
 
         if r < 0.50:
-            # Using self ensures that the enemy object is
-            # created alongside the tile
             self.enemy = enemies.GiantSpider()
             self.alive_text = "A giant spider drops down to attack."
             self.dead_text = "The spider is dead."
@@ -77,7 +74,7 @@ class FindGoldTile(MapTile):
 
 class TraderTile(MapTile):
     def __init__(self, x, y):
-        self.trader = npc.Trader()
+        self.trader = Trader()
         super().__init__(x, y)
 
     def intro_text(self):
@@ -165,8 +162,9 @@ world_dsl = """
 |TT|ST|EN|BT|BT|  |
 |  |EN|  |  |EN|  |
 """
-
+world_map = []
 start_tile_location = None
+
 
 def parse_world_dsl():
     if not is_dsl_valid(world_dsl):
@@ -213,10 +211,6 @@ tile_type_dict = {"VT": VictoryTile,
                   "TT": TraderTile,
                   "FG": FindGoldTile,
                   "  ": None}
-
-# Define all the tiles in the world map
-# Note that world_map[] are rows and world_map[][] are columns
-world_map = []
 
 
 # Retrieve a tile at a given location
