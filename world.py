@@ -1,5 +1,6 @@
 import random
 import enemies
+import npc
 
 
 # Describes tiles on the map and the map grid using
@@ -53,6 +54,61 @@ class EnemyTile(MapTile):
         return text
 
 
+class TraderTile(MapTile):
+    def __init__(self, x, y):
+        self.trader = npc.Trader()
+        super().__init__(x, y)
+
+    def intro_text(self):
+        return """
+        A trader stands by the side of the road.
+        """
+
+    def trade(self, buyer, seller):
+        for i, item in enumerate(seller.inventory, 1):
+            print(f"{i}. {item} ({item.value} Gold)")
+
+        while True:
+            user_input = input("Make your choice: ")
+            print("Press Q to quit")
+            if user_input.lower() == 'q':
+                return
+            try:
+                choice = int(user_input) - 1
+                to_swap = seller.inventory[choice]
+                self.swap(seller, buyer, to_swap)
+            except IndexError:
+                print("That's not for sale!")
+            except ValueError:
+                print("That's not an option!")
+
+    def swap(self, seller, buyer, item):
+        if item.value > buyer.gold:
+            print("You don't have enough gold.")
+            return
+        seller.inventory.remove(item)
+        buyer.inventory.append(item)
+        buyer.gold -= item.value
+        seller.gold += item.value
+        print("Item traded.")
+
+    def check_if_trade(self, player):
+        while True:
+            print("Are you (b)uying or (s)elling?")
+            print("Press q to quit.")
+            user_input = input().lower()
+            if user_input == 'q':
+                return
+            if user_input == 'b':
+                print("Here's what I've got: ")
+                self.trade(buyer=player, seller=self.trader)
+            elif user_input == 's':
+                print("Let's see what you've got!")
+                self.trade(buyer=self.trader, seller=player)
+            else:
+                print("You can't do that.")
+
+
 class StartTile(MapTile):
     def intro_text(self):
         return """
@@ -82,7 +138,7 @@ class VictoryTile(MapTile):
 world_dsl = """
 |  |VT|BT|BT|BT|  |
 |  |EN|  |  |EN|BT|
-|BT|ST|EN|BT|BT|  |
+|TT|ST|EN|BT|BT|  |
 |  |EN|  |  |EN|  |
 """
 
@@ -126,6 +182,7 @@ tile_type_dict = {"VT": VictoryTile,
                   "EN": EnemyTile,
                   "ST": StartTile,
                   "BT": BoringTile,
+                  "TT": TraderTile,
                   "  ": None}
 
 # Define all the tiles in the world map

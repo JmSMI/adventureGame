@@ -10,11 +10,12 @@ class Player:
     # player starts off with an inventory
     def __init__(self):
         self.inventory = [items.Stick(), items.Rock(),
-                          'Gold(5)', items.FreshBread(), items.OldBread()]
+                          items.FreshBread(), items.OldBread()]
         self.hp = 100
         self.x = 1
         self.y = 2
         self.max_hp = 100
+        self.gold = 5
 
     def move(self, dx, dy):
         self.x += dx
@@ -89,8 +90,16 @@ class Player:
     def print_health(self):
         print(f"You have {self.hp} HP.")
 
+    def print_gold(self):
+        print(f"* Gold ({self.gold})")
+
+    def trade(self):
+        room = world.tile_at(self.x, self.y)
+        room.check_if_trade(self)
+
     def print_inventory(self):
         print("Inventory:")
+        self.print_gold()
         for item in self.inventory:
             print(f"* {str(item)}")
 

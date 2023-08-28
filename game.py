@@ -1,3 +1,4 @@
+import npc
 from player import Player
 import world
 from collections import OrderedDict
@@ -33,9 +34,10 @@ def get_available_actions(room, player):
         action_adder(actions, "e", player.move_east, "Move East")
     if world.tile_at(player.x - 1, player.y):
         action_adder(actions, "w", player.move_west, "Move West")
+    if isinstance(room, world.TraderTile):
+        action_adder(actions, "t", player.trade, "Interact with NPC")
     if player.hp < player.max_hp:
         action_adder(actions, "h", player.heal, "Heal")
-
     return actions
 
 
@@ -45,7 +47,8 @@ def action_adder(dictionary, hotkey, action, message):
 
 
 def choose_action(room, player):
-    print("Choose an action: ")
+    print()
+    print("What do you want to do? ")
     action = None
     while not action:
         possible_actions = get_available_actions(room, player)
