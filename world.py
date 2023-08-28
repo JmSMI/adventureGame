@@ -54,6 +54,27 @@ class EnemyTile(MapTile):
         return text
 
 
+class FindGoldTile(MapTile):
+    def __init__(self, x, y):
+        super().__init__(x, y)
+        self.gold = random.randint(1, 50)
+        self.gold_claimed = False
+
+    def modify_player(self, player):
+        if not self.gold_claimed:
+            player.gold += self.gold
+            print(str(self.gold) + " gold added")
+
+    def intro_text(self):
+        if self.gold_claimed:
+            return """
+            Another unremarkable part of the cave.
+            """
+        return """
+        You find some gold. You pick it up.
+        """
+
+
 class TraderTile(MapTile):
     def __init__(self, x, y):
         self.trader = npc.Trader()
@@ -126,6 +147,9 @@ class BoringTile(MapTile):
 
 
 class VictoryTile(MapTile):
+    def modify_player(self, player):
+        player.victory = True
+
     def intro_text(self):
         return """
         You see a light in the distance... 
@@ -136,17 +160,18 @@ class VictoryTile(MapTile):
 
 
 world_dsl = """
-|  |VT|BT|BT|BT|  |
-|  |EN|  |  |EN|BT|
+|  |VT|BT|BT|BT|TT|
+|  |EN|  |  |EN|FG|
 |TT|ST|EN|BT|BT|  |
 |  |EN|  |  |EN|  |
 """
 
+start_tile_location = None
 
-def parse_world_dsf():
+def parse_world_dsl():
     if not is_dsl_valid(world_dsl):
         raise SyntaxError("Error: Invalid DSL.")
-    # Split the DSL into seperate lines
+    # Split the DSL into separate lines
     rows = world_dsl.splitlines()
     # Only include lines that contain something
     rows = [x for x in rows if x]
@@ -162,6 +187,9 @@ def parse_world_dsf():
         # Store the tile_type in a row, then add the finished row to the world map
         for x, cell in enumerate(cell):
             tile_type = tile_type_dict[cell]
+            if tile_type == StartTile:
+                global start_tile_location
+                start_tile_location = x, y
             tiles.append(tile_type(x, y) if tile_type else None)
         world_map.append(tiles)
 
@@ -183,6 +211,7 @@ tile_type_dict = {"VT": VictoryTile,
                   "ST": StartTile,
                   "BT": BoringTile,
                   "TT": TraderTile,
+                  "FG": FindGoldTile,
                   "  ": None}
 
 # Define all the tiles in the world map

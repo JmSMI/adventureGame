@@ -12,10 +12,16 @@ class Player:
         self.inventory = [items.Stick(), items.Rock(),
                           items.FreshBread(), items.OldBread()]
         self.hp = 100
-        self.x = 1
-        self.y = 2
+        self.x = world.start_tile_location[0]
+        self.y = world.start_tile_location[1]
         self.max_hp = 100
         self.gold = 5
+        self.victory = False
+
+    def is_alive(self):
+        if self.hp < 0:
+            return False
+        return True
 
     def move(self, dx, dy):
         self.x += dx
@@ -55,12 +61,16 @@ class Player:
             return
 
         print("What do you want to heal with?")
+        print("Press q to quit")
+
         for index, value in enumerate(consumables, 1):
             print(str(index) + ".", value)
 
         valid = False
         while not valid:
             choice = input("")
+            if choice.lower() == 'q':
+                return
             try:
                 food = consumables[int(choice) - 1]
                 if self.hp == self.max_hp:

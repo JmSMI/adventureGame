@@ -7,18 +7,21 @@ from collections import OrderedDict
 # Describes the state of the game. Allows the player to
 # move around the map
 def play():
-    world.parse_world_dsf()
+    print("Escape from Cave Terror!")
+
+    world.parse_world_dsl()
     player = Player()
 
-    print("Escape from Cave Terror!")
-    print()
-
-    while True:
+    while player.is_alive() and not player.victory:
         room = world.tile_at(player.x, player.y)
+        print()
         print(room.intro_text())
-        choose_action(room, player)
         room.modify_player(player)
 
+        if player.is_alive() and not player.victory:
+            choose_action(room, player)
+        else:
+            print("Your journey has come to an end!")
 
 def get_available_actions(room, player):
     actions = OrderedDict()
