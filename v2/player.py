@@ -1,17 +1,27 @@
 import items
+import world
 
 
 class Player:
     max_hp = 100
 
     def __init__(self):
-        self.inventory = [items.Sword(), items.Bread(), items.Torch()]
+        gold = items.Gold()
+        gold.deposit(5)
+        self.inventory = [items.Sword(), items.Bread(), items.Torch(),
+                          gold]
         self.hp = Player.max_hp
         self.equipped_weapon = None
         self.equipped_food = None
-        self.gold = 3
+        self.x = 1
+        self.y = 2
 
     def show_inventory(self):
+        '''
+        Displays the player inventory to the console.
+        Equipped items are labelled and can be used for
+        healing, attacking, etc.
+        '''
         for i, item in enumerate(self.inventory, 1):
             if item == self.equipped_food:
                 print(f"{i}. {item} (equipped)")
@@ -20,13 +30,48 @@ class Player:
             else:
                 print(f"{i}. {item}")
 
-        print(f"{len(self.inventory) + 1}. Gold ({self.gold})")
+    def move(self, dx, dy):
+        self.x += dx
+        self.y += dy
 
+    def move_north(self):
+        self.move(0, -1)
 
-    # List all weapons and allow the player to choose one.
-    # Selected weapon is set as the equipped item
-    # and a message is displayed to the player
+    def move_south(self):
+        self.move(0, 1)
+
+    def move_west(self):
+        self.move(-1, 0)
+
+    def move_east(self):
+        self.move(1, 0)
+
+    def browse_inventory(self):
+        print(f"Health: {self.hp} HP")
+        self.show_inventory()
+        print("-----------")
+        print("Go (b)ack")
+        print("Select item to view details")
+
+        while True:
+            choice = input().lower()
+            if choice == 'b':
+                return
+            else:
+                try:
+                    print(self.inventory[int(choice) - 1].description)
+                    self.show_inventory()
+                except ValueError:
+                    self.show_inventory()
+                except IndexError:
+                    self.show_inventory()
+
     def choose_weapon(self):
+        '''
+        Prompt the player to equip a weapon from their inventory.
+        Prompts the player to equip a different weapon if one
+        is already equipped.
+        '''
         weapons = []
         weapon_counter = 0
         for item in self.inventory:
@@ -47,12 +92,33 @@ class Player:
                 print()
 
     def attack(self):
+        """
+        Allows the player to attack an enemy using
+        their equipped weapon
+        """
         if not self.equipped_weapon:
             print("You don't have a weapon equipped. ")
             self.choose_weapon()
-        print("Attack using " + str(self.equipped_weapon))
+
+        room = world.tile_at(self.x, self.y)
+        if isinstance(room, world.EnemyTile):
+            enemy = room.enemy
+        else:
+            print("There's nothing to attack.")
+            return
+        if not enemy.is_alive():
+            print("The enemy isn't a threat.")
+            return
+        else:
+            print(f"You attack using a {str(self.equipped_weapon)} "
+                  f"dealing {self.equipped_weapon.damage} damage")
+            enemy.hp -= self.equipped_weapon.damage
 
     def heal(self):
+        """
+        Allows the player to heal using their equipped
+        consumable.
+        """
         healed = False
         while not healed:
             if self.equipped_food:
@@ -72,6 +138,10 @@ class Player:
                 self.choose_consumable()
 
     def choose_consumable(self):
+        """
+        Prompts the player to equip a Consumable from their
+        inventory
+        """
         consumables = []
         consumables_counter = 0
         for item in self.inventory:

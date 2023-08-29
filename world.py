@@ -2,6 +2,7 @@ import random
 import enemies
 from npc import Trader
 
+
 # Describes tiles on the map and the map grid using
 # x, y coordinates
 class MapTile:
@@ -163,7 +164,7 @@ world_dsl = """
 |  |EN|  |  |EN|  |
 """
 world_map = []
-start_tile_location = None
+start_tile_location = None  # Defined later
 
 
 def parse_world_dsl():
