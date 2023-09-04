@@ -11,8 +11,10 @@ class Weapon:
 
 
 class Sword(Weapon):
+    sword_damage = 10
+
     def __init__(self):
-        self.damage = 10
+        self.damage = Sword.sword_damage
         self.value = 5
         self.name = "Sword"
         self.description = "A shiny sword you can use to chop things."
@@ -65,6 +67,3 @@ class Gold(Currency):
         self.name = "Gold"
         self.quantity = 0
         self.description = "Gold coins"
-
-
-

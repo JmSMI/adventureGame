@@ -1,3 +1,5 @@
+import random
+
 import enemies
 
 
@@ -19,13 +21,27 @@ class MapTile:
 class EnemyTile(MapTile):
     def __init__(self, x, y):
         self.counter = 0
-        self.enemy = enemies.Bat()
+        frequency = random.random()
+        if frequency > .98:
+            self.enemy = enemies.Dragon()
+        elif frequency > 95:
+            self.enemy = enemies.Rabbit()
+        elif frequency > .83:
+            self.enemy = enemies.Troll()
+        elif frequency > .60:
+            self.enemy = enemies.Bat()
+        elif frequency > .20:
+            self.enemy = enemies.Ghost()
+        elif frequency > 0:
+            self.enemy = enemies.Goblin()
+
+
         super().__init__(x, y)
 
     def modify_player(self, player):
         if self.enemy.is_alive() and self.check_attack_state():
-            print("Enemy attacks!")  # TODO
             player.hp -= self.enemy.damage
+            print("You have " + str(max(0, player.hp)) + "HP remaining.")
 
     def show_text(self):
         """
@@ -88,7 +104,6 @@ world_map = [
     [None, EmptyTile(1, 3), None], ]
 
 
-# Missing validation
 def tile_at(x, y):
     if x < 0 or y < 0:
         raise IndexError("Coordinates do not exist in world map")

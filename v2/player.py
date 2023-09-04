@@ -8,7 +8,7 @@ class Player:
     def __init__(self):
         gold = items.Gold()
         gold.deposit(5)
-        self.inventory = [items.Sword(), items.Bread(), items.Torch(),
+        self.inventory = [items.Sword(), items.Sword(), items.Torch(),
                           gold]
         self.hp = Player.max_hp
         self.equipped_weapon = None
@@ -126,8 +126,8 @@ class Player:
                 heal_choice = input("y/n? ").lower()
                 if heal_choice == 'y' and self.hp < Player.max_hp:
                     self.hp += self.equipped_food.hp
+                    print(f"Consumed {self.equipped_food} to heal {self.equipped_food.hp} HP")
                     self.equipped_food = None
-                    print("Consumed ... to heal ... HP")
                     healed = True
                 elif heal_choice == 'y' and self.hp >= Player.max_hp:
                     print("You already have max hp")
@@ -135,7 +135,11 @@ class Player:
                 elif heal_choice == 'n':
                     return
             elif not self.equipped_food:
-                self.choose_consumable()
+                if self.choose_consumable():
+                    self.choose_consumable()
+                else:
+                    print("\nYou don't have anything to heal with.\n")
+                    return
 
     def choose_consumable(self):
         """
@@ -149,6 +153,11 @@ class Player:
                 consumables.append(item)
                 consumables_counter += 1
                 print(f"{consumables_counter}. {item}")
+
+        # Can't consume without any Consumables!
+        if not consumables:
+            return False
+
         choosing = True
         while choosing:
             choice = input("Select a food to equip: ")
