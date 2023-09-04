@@ -83,7 +83,7 @@ class StartTile(MapTile):
 
 class EmptyTile(MapTile):
     def show_text(self):
-        pass
+        return """There's nothing here."""
 
     def __init__(self, x, y):
         super().__init__(x, y)
@@ -106,6 +106,6 @@ world_map = [
 
 def tile_at(x, y):
     if x < 0 or y < 0:
-        raise IndexError("Coordinates do not exist in world map")
-    elif x < len(world_map) and y < len(world_map[x]):
+        return None
+    elif y < len(world_map) and x < len(world_map[y]):
         return world_map[y][x]

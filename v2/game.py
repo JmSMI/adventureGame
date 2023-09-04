@@ -1,14 +1,14 @@
 import items
 from player import Player
 import world
+from collections import OrderedDict
 
 
 def play():
     player = Player()
-    god_mode = False
 
     print("Escape the maze")
-    show_controls()
+
     while True:
         room = world.tile_at(player.x, player.y)
 
@@ -17,57 +17,18 @@ def play():
             pass
         else:
             print(room.show_text())
+
         room.modify_player(player)
+        # Show a different encounter text on the second turn with an Enemy
+        room.encounter_counter()
+
         if player.hp <= 0:
             print()
             print("You are defeated.")
             print()
             return
-        # Show a different encounter text on the second turn with an Enemy
-        room.encounter_counter()
-        action_input = input("Choose an action: ").lower()
-        if action_input == 'n':
-            print("north")
-            player.move_north()
-        elif action_input == 's':
-            print("south")
-            player.move_south()
-        elif action_input == 'w':
-            print("west")
-            player.move_west()
-        elif action_input == 'e':
-            print("east")
-            player.move_east()
-        elif action_input == 'c':
-            print("choose weapon")
-            player.choose_weapon()
-        elif action_input == 'i':
-            player.browse_inventory()
-        elif action_input == 'a':
-            player.attack()
-        elif action_input == 'h':
-            player.heal()
-        elif action_input == 'help':
-            show_help()
-        elif action_input == 'qwerty':
-            if god_mode == False:
-                print("God mode enabled!!")
-                print("500 player HP, 200 sword damage")
-                player.hp = 500
-                for items.Sword in player.inventory:
-                    items.Sword.damage = 200
-                god_mode = not god_mode
-            else:
-                print("God mode disabled!!")
-                player.hp = Player.max_hp
-                for item in [x for x in player.inventory if type(x) == items.Sword]:
-                    item.damage = items.Sword.sword_damage
-                god_mode = not god_mode
-        elif action_input == 'l':  # display location for troubleshooting map
-            print(player.x)
-            print(player.y)
-        else:
-            print("You stare ahead blankly.")
+
+        choose_action(room, player)
 
 
 def show_controls():
@@ -77,6 +38,43 @@ def show_controls():
           '\nc: choose weapon'
           '\ni: inventory'
           '\nh: heal')
+
+
+def get_available_actions(room, player):
+    actions = OrderedDict()
+    print("Choose an action")
+    if player.inventory:
+        action_adder(actions, 'i', player.open_inventory, "Show inventory")
+    if isinstance(room, world.EnemyTile) and room.enemy.is_alive() and not room.enemy.defeated:
+        action_adder(actions, 'a', player.attack, "Attack")
+    if world.tile_at(player.x, player.y + 1):
+        action_adder(actions, 's', player.move_south, "Move south")
+    if world.tile_at(player.x, player.y - 1):
+        action_adder(actions, 'n', player.move_north, "Move north")
+    if world.tile_at(player.x + 1, player.y):
+        action_adder(actions, 'e', player.move_east, "Move east")
+    if world.tile_at(player.x - 1, player.y):
+        action_adder(actions, 'w', player.move_west, "Move west")
+    if player.hp < Player.max_hp:
+        action_adder(actions, 'h', player.heal, "Heal")
+    return actions
+
+
+def action_adder(dictionary, key, value, message):
+    dictionary[key] = value
+    print(key + ": " + message)
+
+
+def choose_action(room, player):
+    action = None
+    while not action:
+        available_actions = get_available_actions(room, player)
+        action_input = input("Action: ").lower()
+        action = available_actions.get(action_input)
+        if action:
+            action()
+        else:
+            print("You can't do that.")
 
 
 def show_help():
