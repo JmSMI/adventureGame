@@ -11,21 +11,27 @@ class Weapon:
 
 
 class Sword(Weapon):
-    sword_damage = 10
-
-    def __init__(self):
-        self.damage = Sword.sword_damage
-        self.value = 5
-        self.name = "Sword"
-        self.description = "A shiny sword you can use to chop things."
+    def __init__(self, damage):
+        self.damage = damage
+        self.value = 8
+        self.name = "sword"
+        self.description = "a shiny sword you can use to chop things."
 
 
 class Torch(Weapon):
     def __init__(self):
         self.damage = 2
         self.value = 5
-        self.name = "Torch"
-        self.description = "A torch to light the way."
+        self.name = "torch"
+        self.description = "a torch to light the way. it's not very useful."
+
+
+class Knife(Weapon):
+    def __init__(self, damage):
+        self.damage = damage
+        self.value = 5
+        self.name = "knife"
+        self.description = "a small pocket knife."
 
 
 class Consumable:
@@ -42,8 +48,8 @@ class Bread(Consumable):
     def __init__(self):
         self.hp = 25
         self.value = 1
-        self.name = "Bread"
-        self.description = "A fresh chunk of bread."
+        self.name = "bread"
+        self.description = "a fresh chunk of bread."
 
 
 class Currency:
@@ -61,9 +67,12 @@ class Currency:
     def withdraw(self, amount):
         self.quantity -= amount
 
+    def get_balance(self):
+        return self.quantity
+
 
 class Gold(Currency):
-    def __init__(self):
-        self.name = "Gold"
-        self.quantity = 0
-        self.description = "Gold coins"
+    def __init__(self, quantity):
+        self.quantity = quantity
+        self.name = "gold"
+        self.description = "some gold coins"

@@ -6,14 +6,13 @@ class Player:
     max_hp = 100
 
     def __init__(self):
-        gold = items.Gold()
-        gold.deposit(5)
-        self.inventory = [items.Sword(), items.Bread(), items.Torch(), gold]
+        self.gold = items.Gold(5)
+        self.inventory = [items.Sword(10), items.Bread(), items.Torch()]
         self.hp = Player.max_hp
         self.equipped_weapon = None
         self.equipped_food = None
-        self.x = 1
-        self.y = 2
+        self.x = 0
+        self.y = 3
 
     def show_inventory(self):
         """
@@ -21,8 +20,10 @@ class Player:
         Equipped items are labelled and can be used for
         healing, attacking, etc.
         """
-        print("\nSelect an item to view details")
+        print("\n--INVENTORY--")
+        print("select an item to view details")
         print(f"{self.hp} / {Player.max_hp} HP ")
+        print(f"{self.gold.get_balance()} gold\n")
         for i, item in enumerate(self.inventory, 1):
             if item == self.equipped_food:
                 print(f"{i}. {item} (equipped)")
@@ -31,10 +32,9 @@ class Player:
             else:
                 print(f"{i}. {item}")
         print("-----------")
-        print("(b) Go back")
-        print("(e) Equip weapon")
-        print("(h) Equip healing item")
-
+        print("(z) go back")
+        print("(e) equip weapon")
+        print("(h) equip healing item")
 
     def move(self, dx, dy):
         self.x += dx
@@ -56,11 +56,11 @@ class Player:
         self.show_inventory()
         while True:
             choice = input().lower()
-            if choice == 'b':
+            if choice == 'z':  # go back
                 return
-            elif choice == 'e':
+            elif choice == 'e':  # equip weapon
                 self.choose_weapon()
-            elif choice == 'h':
+            elif choice == 'h':  # heal
                 self.choose_consumable()
             else:
                 try:
@@ -173,3 +173,6 @@ class Player:
                 print()
             except IndexError:
                 print()
+
+    def is_alive(self):
+        return self.hp > 0

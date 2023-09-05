@@ -1,6 +1,8 @@
 import random
 
 import enemies
+import npc
+from v2 import items
 
 
 class MapTile:
@@ -40,7 +42,7 @@ class EnemyTile(MapTile):
     def modify_player(self, player):
         if self.enemy.is_alive() and self.check_attack_state():
             player.hp -= self.enemy.damage
-            print("you have " + str(max(0, player.hp)) + "HP remaining.")
+            print("you have " + str(max(0, player.hp)) + "hp remaining.")
 
     def show_text(self):
         """
@@ -89,24 +91,61 @@ class NothingTile(MapTile):
 
 
 class EndTile(MapTile):
+    def __init__(self, x, y):
+        super().__init__(x, y)
+
     def show_text(self):
         return """you walk out of the maze"""
 
+
+class FindGoldTile(MapTile):
     def __init__(self, x, y):
+        self.gold = None
+        self.claimed = False
+        self.generate_gold()
         super().__init__(x, y)
+
+    def generate_gold(self):
+        amount = random.randint(2, 6)
+        if amount == 6:
+            amount = random.randint(8, 12)
+            if amount == 12:
+                amount = random.randint(15, 20)
+        self.gold = items.Gold(amount)
+
+    def modify_player(self, player):
+        if not self.claimed:
+            player.gold.deposit(self.gold.get_balance())
+            print(f"you find {self.gold.get_balance()} gold")
+        self.generate_gold()
+
+    def show_text(self):
+        if self.claimed:
+            return """there's nothing else to find here"""
+        return """you stumble on some loot"""
+
+
+class TraderTile(MapTile):
+    def __init__(self, x, y):
+        self.trader = npc.Trader()
+        super().__init__(x, y)
+
+    def show_text(self):
+        return """a merchant has set up shop here"""
 
 
 world_map = []
 
 world_dsl = """
-|  |VT|NT|NT|NT|
-|  |EN|  |  |NT|
-|EN|ST|EN|NT|EN|
+|FG|  |VC|ET|NO|
+|ST|  |NO|  |NO|
+|TR|ET|  |  |NO|
+|  |NO|ET|NO|NO|
 """
 
 
 def validate_dsl(dsl):
-    if dsl.count("|VT|") != 1:
+    if dsl.count("|VC|") != 1:
         return False
     if dsl.count("|ST|") != 1:
         return False
@@ -117,6 +156,9 @@ def validate_dsl(dsl):
         if pipes != pipe_count[0]:
             return False
     return True
+
+
+start_tile_location = None
 
 
 def parse_dsl(dsl):
@@ -132,15 +174,21 @@ def parse_dsl(dsl):
         row = []
         for row_index, tile in enumerate(tiles):
             tile_type = tile_dictionary[tile]
+            if tile_type == StartTile:
+                global start_tile_location
+                start_tile_location = row_index, col_index
+
             row.append(tile_type(row_index, col_index) if tile_type else None)
 
         world_map.append(row)
 
 
 tile_dictionary = {"ST": StartTile,
-                   "VT": EndTile,
-                   "NT": NothingTile,
-                   "EN": EnemyTile,
+                   "VC": EndTile,
+                   "NO": NothingTile,
+                   "ET": EnemyTile,
+                   "TR": TraderTile,
+                   "FG": FindGoldTile,
                    "  ": None
                    }
 
