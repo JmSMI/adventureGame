@@ -6,7 +6,7 @@ from collections import OrderedDict
 
 def play():
     player = Player()
-
+    world.parse_dsl(world.world_dsl)
     print("Escape the maze")
 
     while True:
@@ -31,22 +31,25 @@ def play():
         choose_action(room, player)
 
 
-def show_controls():
-    print("-------------")
-    print('n/w/s/e: move'
-          '\na: attack'
-          '\nc: choose weapon'
-          '\ni: inventory'
-          '\nh: heal')
+def choose_action(room, player):
+    action = None
+    while not action:
+        available_actions = get_available_actions(room, player)
+        action_input = input("Action: ").lower()
+        action = available_actions.get(action_input)
+        if action:
+            action()
+        else:
+            print("\nyou think for a moment, and then...")
+            return
 
 
 def get_available_actions(room, player):
     actions = OrderedDict()
+    print(f"\n{player.hp} / {Player.max_hp} HP ")
     print("Choose an action")
     if player.inventory:
-        action_adder(actions, 'i', player.open_inventory, "Show inventory")
-    if isinstance(room, world.EnemyTile) and room.enemy.is_alive() and not room.enemy.defeated:
-        action_adder(actions, 'a', player.attack, "Attack")
+        action_adder(actions, 'i', player.browse_inventory, "Open inventory")
     if world.tile_at(player.x, player.y + 1):
         action_adder(actions, 's', player.move_south, "Move south")
     if world.tile_at(player.x, player.y - 1):
@@ -57,29 +60,16 @@ def get_available_actions(room, player):
         action_adder(actions, 'w', player.move_west, "Move west")
     if player.hp < Player.max_hp:
         action_adder(actions, 'h', player.heal, "Heal")
+    if isinstance(room, world.EnemyTile) and room.enemy.is_alive() and not room.enemy.defeated:
+        action_adder(actions, 'a', player.attack, "Attack")
     return actions
 
 
+#
+
 def action_adder(dictionary, key, value, message):
     dictionary[key] = value
-    print(key + ": " + message)
-
-
-def choose_action(room, player):
-    action = None
-    while not action:
-        available_actions = get_available_actions(room, player)
-        action_input = input("Action: ").lower()
-        action = available_actions.get(action_input)
-        if action:
-            action()
-        else:
-            print("You can't do that.")
-
-
-def show_help():
-    print("Try to make your way through the cave.")
-    show_controls()
+    print(f"({key}) {message}")
 
 
 play()
