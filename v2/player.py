@@ -132,6 +132,7 @@ class Player:
                 if heal_choice == 'y' and self.hp < Player.max_hp:
                     self.hp += self.equipped_food.hp
                     print(f"Consumed {self.equipped_food} to heal {self.equipped_food.hp} HP")
+                    self.inventory.remove(self.equipped_food)
                     self.equipped_food = None
                     healed = True
                 elif heal_choice == 'y' and self.hp >= Player.max_hp:

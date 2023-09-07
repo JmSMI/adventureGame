@@ -48,6 +48,11 @@ def play():
             print("you are defeated.")
             print()
             return
+        if isinstance(room, world.WinTile):
+            print()
+            print("the end")
+            print()
+            return
 
         choose_action(room, player)
 
@@ -89,8 +94,6 @@ def get_available_actions(room, player):
         action_adder(actions, 't', room.trader.trade, "trade")
     return actions
 
-
-#
 
 def action_adder(dictionary, key, value, message):
     dictionary[key] = value

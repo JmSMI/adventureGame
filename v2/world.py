@@ -90,7 +90,7 @@ class NothingTile(MapTile):
         super().__init__(x, y)
 
 
-class EndTile(MapTile):
+class WinTile(MapTile):
     def __init__(self, x, y):
         super().__init__(x, y)
 
@@ -106,11 +106,13 @@ class FindGoldTile(MapTile):
         super().__init__(x, y)
 
     def generate_gold(self):
-        amount = random.randint(2, 6)
-        if amount == 6:
-            amount = random.randint(8, 12)
-            if amount == 12:
-                amount = random.randint(15, 20)
+        rand = random.random()
+        if rand > .99:
+            amount = 30
+        elif rand > .95:
+            amount = 15
+        else:
+            amount = random.randint(2, 8)
         self.gold = items.Gold(amount)
 
     def modify_player(self, player):
@@ -137,7 +139,7 @@ class TraderTile(MapTile):
 world_map = []
 
 world_dsl = """
-|FG|  |VC|ET|NO|
+|FG|  |WT|ET|NO|
 |ST|  |NO|  |NO|
 |TR|ET|  |  |NO|
 |  |NO|ET|NO|NO|
@@ -145,7 +147,7 @@ world_dsl = """
 
 
 def validate_dsl(dsl):
-    if dsl.count("|VC|") != 1:
+    if dsl.count("|WT|") != 1:
         return False
     if dsl.count("|ST|") != 1:
         return False
@@ -184,7 +186,7 @@ def parse_dsl(dsl):
 
 
 tile_dictionary = {"ST": StartTile,
-                   "VC": EndTile,
+                   "WT": WinTile,
                    "NO": NothingTile,
                    "ET": EnemyTile,
                    "TR": TraderTile,
