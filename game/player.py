@@ -7,7 +7,7 @@ class Player:
 
     def __init__(self):
         self.gold = items.Gold(5)
-        self.inventory = [items.Sword(10), items.Bread(), items.Torch()]
+        self.inventory = [items.Sword(10, 5), items.Bread(), items.Torch()]
         self.hp = Player.max_hp
         self.equipped_weapon = None
         self.equipped_food = None

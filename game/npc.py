@@ -16,7 +16,7 @@ class Trader(NonPlayableCharacter):
         self.name = "Trader"
         self.hp = 25
         self.gold = items.Gold(20)
-        self.inventory = [items.Knife(8), items.Bread()]
+        self.inventory = [items.Sword(15, 8), items.Bread(), items.HealingPotion()]
 
     def interact(self, human):
         if not self.human:

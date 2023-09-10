@@ -27,7 +27,7 @@ def play():
     ''')
     print("welcome to ESCAPE")
     print("release 0.2")
-    print("don't get lost:\n")
+    print("find the end:\n")
 
 
     while True:

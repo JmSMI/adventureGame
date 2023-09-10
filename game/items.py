@@ -11,9 +11,11 @@ class Weapon:
 
 
 class Sword(Weapon):
-    def __init__(self, damage):
+    def __init__(self, damage, value):
+        if damage <= 0 or value <= 0:
+            raise ValueError("Damage or value can't be zero.")
         self.damage = damage
-        self.value = 8
+        self.value = value
         self.name = "sword"
         self.description = "a shiny sword you can use to chop things."
 
@@ -49,7 +51,15 @@ class Bread(Consumable):
         self.hp = 25
         self.value = 1
         self.name = "bread"
-        self.description = "a fresh chunk of bread."
+        self.description = "a fresh chunk of bread. heals " + str(self.hp) + "HP"
+
+
+class HealingPotion(Consumable):
+    def __init__(self):
+        self.hp = 75
+        self.value = 5
+        self.name = "potion"
+        self.description = "a potent healing potion. heals " + str(self.hp) + "HP"
 
 
 class Currency:
@@ -75,4 +85,4 @@ class Gold(Currency):
     def __init__(self, quantity):
         self.quantity = quantity
         self.name = "gold"
-        self.description = "some gold coins"
+        self.description = "some gold coins. exchange them with a merchant to buy things."

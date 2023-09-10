@@ -108,9 +108,9 @@ A goblins scampers around the corner, its beady eyes fixated on you
 class Ghost(Enemy):
     def __init__(self):
         self.name = "Ghost"
-        self.hp = 100
+        self.hp = 10
         self.defeated = False
-        self.damage = 60
+        self.damage = 40
         self.attack_text = '''
 The ghost envelops you in a chilling ethereal grasp, 
 draining your warmth

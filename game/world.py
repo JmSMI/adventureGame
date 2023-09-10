@@ -2,7 +2,7 @@ import random
 
 import enemies
 import npc
-from v2 import items
+import items
 
 
 class MapTile:
