@@ -20,7 +20,7 @@ class MapTile:
         pass
 
 
-class EnemyTile(MapTile):
+class ChallengeTile(MapTile):
     def __init__(self, x, y):
         self.counter = 0
         frequency = random.random()
@@ -127,7 +127,7 @@ class FindGoldTile(MapTile):
         return """you stumble on some loot"""
 
 
-class TraderTile(MapTile):
+class MerchantTile(MapTile):
     def __init__(self, x, y):
         self.trader = npc.Trader()
         super().__init__(x, y)
@@ -139,10 +139,11 @@ class TraderTile(MapTile):
 world_map = []
 
 world_dsl = """
-|FG|  |WT|ET|NO|
-|ST|  |NO|  |NO|
-|TR|ET|  |  |NO|
-|  |NO|ET|NO|NO|
+|FG|  |  |CT|WT|NO|
+|FG|  |  |CT|NO|NO|
+|NO|  |NO|NO|CT|NO|
+|CT|  |  |CT|NO|FG|
+|ST|NO|MT|NO|NO|NO|
 """
 
 
@@ -188,8 +189,8 @@ def parse_dsl(dsl):
 tile_dictionary = {"ST": StartTile,
                    "WT": WinTile,
                    "NO": NothingTile,
-                   "ET": EnemyTile,
-                   "TR": TraderTile,
+                   "CT": ChallengeTile,
+                   "MT": MerchantTile,
                    "FG": FindGoldTile,
                    "  ": None
                    }

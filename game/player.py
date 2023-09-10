@@ -105,7 +105,7 @@ class Player:
             self.choose_weapon()
 
         room = world.tile_at(self.x, self.y)
-        if isinstance(room, world.EnemyTile):
+        if isinstance(room, world.ChallengeTile):
             enemy = room.enemy
         else:
             print("There's nothing to attack.")

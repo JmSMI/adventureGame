@@ -25,16 +25,16 @@ def play():
 @@  @@  @@  @@  @@@@@@  @@  @@
 @@      @@              @@  @@
     ''')
-    print("welcome to ESCAPE THE MAZE")
+    print("welcome to ESCAPE")
     print("release 0.2")
-    print("navigate your way through to the other side:\n")
+    print("don't get lost:\n")
 
 
     while True:
         room = world.tile_at(player.x, player.y)
 
         # Only show enemy text when Enemy is alive
-        if isinstance(room, world.EnemyTile) and room.enemy.defeated:
+        if isinstance(room, world.ChallengeTile) and room.enemy.defeated:
             pass
         else:
             print(room.show_text())
@@ -87,9 +87,9 @@ def get_available_actions(room, player):
         action_adder(actions, 'w', player.move_west, "move west")
     if player.hp < Player.max_hp:
         action_adder(actions, 'h', player.heal, "heal")
-    if isinstance(room, world.EnemyTile) and room.enemy.is_alive() and not room.enemy.defeated:
+    if isinstance(room, world.ChallengeTile) and room.enemy.is_alive() and not room.enemy.defeated:
         action_adder(actions, 'a', player.attack, "attack")
-    if isinstance(room, world.TraderTile):
+    if isinstance(room, world.MerchantTile):
         room.trader.interact(player)
         action_adder(actions, 't', room.trader.trade, "trade")
     return actions
