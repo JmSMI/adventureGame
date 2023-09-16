@@ -11,8 +11,16 @@ class Player:
         self.hp = Player.max_hp
         self.equipped_weapon = None
         self.equipped_food = None
+        self.enableMovement = True
         self.x = 0
         self.y = 3
+
+    def torch_equipped(self):
+        """
+        Checks if the player has the torn equipped.
+        :return: False if the player does not have a torch equipped
+        """
+        return self.equipped_weapon == items.Torch
 
     def show_inventory(self):
         """

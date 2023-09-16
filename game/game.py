@@ -29,7 +29,6 @@ def play():
     print("release 0.2")
     print("find the end:\n")
 
-
     while True:
         room = world.tile_at(player.x, player.y)
 
@@ -57,6 +56,10 @@ def play():
         choose_action(room, player)
 
 
+global move_history
+move_history = []
+
+
 def choose_action(room, player):
     action = None
     while not action:
@@ -64,6 +67,7 @@ def choose_action(room, player):
         action_input = input("...?").lower()
         action = available_actions.get(action_input)
         if action:
+            move_history.append(action_input)
             action()
         else:
             print("\nyou think for a moment, and then...")
@@ -71,20 +75,44 @@ def choose_action(room, player):
 
 
 def get_available_actions(room, player):
+    last_move = ""
+    print(move_history)
+    for i in range(len(move_history) - 1, -1, -1):
+        print(move_history[i])
+        if move_history[i] in ['s', 'w', 'n', 'e']:
+            last_move = move_history[i]
+            break
+
     actions = OrderedDict()
     print("-----------------------------------------------")
     print(f"\n{player.hp} / {Player.max_hp} HP ")
     print("choose an action")
+    #todo allow the player to leave the darkTile and regain movement
+    #movement should only be disabled when player in dark tile
+    #and no torch equipped
+    #currently, they'll walk into DT, then lose movement and
+    #only be able to make the last move. Even the case when
+    #reentering the DT with torch equippped!!
+    print(player.enableMovement)
     if player.inventory:
         action_adder(actions, 'i', player.browse_inventory, "open inventory")
-    if world.tile_at(player.x, player.y + 1):
+    if world.tile_at(player.x, player.y + 1) and player.enableMovement:
         action_adder(actions, 's', player.move_south, "move south")
-    if world.tile_at(player.x, player.y - 1):
+    if world.tile_at(player.x, player.y - 1) and player.enableMovement:
         action_adder(actions, 'n', player.move_north, "move north")
-    if world.tile_at(player.x + 1, player.y):
+    if world.tile_at(player.x + 1, player.y) and player.enableMovement:
         action_adder(actions, 'e', player.move_east, "move east")
-    if world.tile_at(player.x - 1, player.y):
+    if world.tile_at(player.x - 1, player.y) and player.enableMovement:
         action_adder(actions, 'w', player.move_west, "move west")
+    if not player.enableMovement:
+        if last_move == 'e':
+            action_adder(actions, 'w', player.move_west, "move west")
+        elif last_move == 's':
+            action_adder(actions, 'n', player.move_north, "move north")
+        elif last_move == 'w':
+            action_adder(actions, 'e', player.move_east, "move east")
+        elif last_move == 'n':
+            action_adder(actions, 's', player.move_south, "move south")
     if player.hp < Player.max_hp:
         action_adder(actions, 'h', player.heal, "heal")
     if isinstance(room, world.ChallengeTile) and room.enemy.is_alive() and not room.enemy.defeated:

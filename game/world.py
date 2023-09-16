@@ -19,6 +19,20 @@ class MapTile:
     def modify_player(self, player):
         pass
 
+class DarkTile(MapTile):
+    def __init__(self, x, y):
+        self.light = False
+        super().__init__(x, y)
+    def show_text(self):
+        return """it's too dark to see anything"""
+
+    def modify_player(self, player):
+        # check if the player has a torch equipped
+        if not player.torch_equipped():
+            # stop the player from proceeding
+            player.enableMovement = False
+        else:
+            player.enableMovement = True
 
 class ChallengeTile(MapTile):
     def __init__(self, x, y):
@@ -143,7 +157,7 @@ world_dsl = """
 |FG|  |  |CT|NO|NO|
 |NO|  |NO|NO|CT|NO|
 |CT|  |  |CT|NO|FG|
-|ST|NO|MT|NO|NO|NO|
+|ST|DT|MT|NO|NO|NO|
 """
 
 
@@ -192,6 +206,7 @@ tile_dictionary = {"ST": StartTile,
                    "CT": ChallengeTile,
                    "MT": MerchantTile,
                    "FG": FindGoldTile,
+                   "DT": DarkTile,
                    "  ": None
                    }
 
