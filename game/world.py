@@ -19,20 +19,28 @@ class MapTile:
     def modify_player(self, player):
         pass
 
+
 class DarkTile(MapTile):
     def __init__(self, x, y):
         self.light = False
         super().__init__(x, y)
+
     def show_text(self):
-        return """it's too dark to see anything"""
+        if self.light:
+            return """you light up the path using your torch"""
+        else:
+            return """it's too dark to see anything"""
 
     def modify_player(self, player):
         # check if the player has a torch equipped
         if not player.torch_equipped():
             # stop the player from proceeding
             player.enableMovement = False
+            self.light = False
         else:
             player.enableMovement = True
+            self.light = True
+
 
 class ChallengeTile(MapTile):
     def __init__(self, x, y):

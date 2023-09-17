@@ -12,15 +12,25 @@ class Player:
         self.equipped_weapon = None
         self.equipped_food = None
         self.enableMovement = True
+        self.action_history = []
         self.x = 0
         self.y = 3
+
+    def get_last_move(self):
+        last_move = ""
+        for i in range(len(self.action_history) - 1, -1, -1):
+            if self.action_history[i] in ['s', 'w', 'n', 'e']:
+                last_move = self.action_history[i]
+                break
+        return last_move
+
 
     def torch_equipped(self):
         """
         Checks if the player has the torn equipped.
         :return: False if the player does not have a torch equipped
         """
-        return self.equipped_weapon == items.Torch
+        return isinstance(self.equipped_weapon, items.Torch)
 
     def show_inventory(self):
         """
@@ -28,10 +38,11 @@ class Player:
         Equipped items are labelled and can be used for
         healing, attacking, etc.
         """
-        print("\n--INVENTORY--")
-        print("select an item to view details")
+        print("--PLAYER STATS--")
         print(f"{self.hp} / {Player.max_hp} HP ")
-        print(f"{self.gold.get_balance()} gold\n")
+        print(f"{self.gold.get_balance()} gold")
+        print(f"moves {len(self.action_history)}")
+        print("--INVENTORY--")
         for i, item in enumerate(self.inventory, 1):
             if item == self.equipped_food:
                 print(f"{i}. {item} (equipped)")
@@ -39,7 +50,8 @@ class Player:
                 print(f"{i}. {item} (equipped)")
             else:
                 print(f"{i}. {item}")
-        print("-----------")
+        print("...")
+        print("select an item to view details")
         print("(z) go back")
         print("(e) equip weapon")
         print("(h) equip healing item")
@@ -152,7 +164,7 @@ class Player:
                 if not self.equipped_food:
                     self.choose_consumable()
                 else:
-                    print("\nYou don't have anything to heal with.\n")
+                    print("\nyou don't have anything to heal with.\n")
                     return
 
     def choose_consumable(self):
@@ -170,13 +182,13 @@ class Player:
 
         # Can't consume without any Consumables!
         if not consumables:
-            print("You don't have anything to heal with.")
+            print("you don't have anything to heal with.")
             return
         while True:
-            choice = input("Equip a healing item: ")
+            choice = input("equip a healing item: ")
             try:
                 self.equipped_food = consumables[int(choice) - 1]
-                print("You equipped " + str(self.equipped_food) + "\n")
+                print("you equipped " + str(self.equipped_food))
                 return
             except ValueError:
                 print()

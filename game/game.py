@@ -31,14 +31,15 @@ def play():
 
     while True:
         room = world.tile_at(player.x, player.y)
+        player.enableMovement = True
 
         # Only show enemy text when Enemy is alive
         if isinstance(room, world.ChallengeTile) and room.enemy.defeated:
             pass
         else:
+            room.modify_player(player)
             print(room.show_text())
 
-        room.modify_player(player)
         # Show a different encounter text on the second turn with an Enemy
         room.encounter_counter()
 
@@ -64,10 +65,10 @@ def choose_action(room, player):
     action = None
     while not action:
         available_actions = get_available_actions(room, player)
-        action_input = input("...?").lower()
+        action_input = input("...?\n").lower()
         action = available_actions.get(action_input)
         if action:
-            move_history.append(action_input)
+            player.action_history.append(action_input)
             action()
         else:
             print("\nyou think for a moment, and then...")
@@ -75,25 +76,18 @@ def choose_action(room, player):
 
 
 def get_available_actions(room, player):
-    last_move = ""
-    print(move_history)
-    for i in range(len(move_history) - 1, -1, -1):
-        print(move_history[i])
-        if move_history[i] in ['s', 'w', 'n', 'e']:
-            last_move = move_history[i]
-            break
-
+    last_move = player.get_last_move()
     actions = OrderedDict()
-    print("-----------------------------------------------")
-    print(f"\n{player.hp} / {Player.max_hp} HP ")
+    print("...")
     print("choose an action")
-    #todo allow the player to leave the darkTile and regain movement
-    #movement should only be disabled when player in dark tile
-    #and no torch equipped
-    #currently, they'll walk into DT, then lose movement and
-    #only be able to make the last move. Even the case when
-    #reentering the DT with torch equippped!!
-    print(player.enableMovement)
+    print(f"{player.hp} / {Player.max_hp} HP | weapon: {player.equipped_weapon} | "
+          f"food: {player.equipped_food}")
+    # todo allow the player to leave the darkTile and regain movement
+    # movement should only be disabled when player in dark tile
+    # and no torch equipped
+    # currently, they'll walk into DT, then lose movement and
+    # only be able to make the last move. Even the case when
+    # reentering the DT with torch equippped!!
     if player.inventory:
         action_adder(actions, 'i', player.browse_inventory, "open inventory")
     if world.tile_at(player.x, player.y + 1) and player.enableMovement:
